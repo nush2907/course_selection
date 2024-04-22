@@ -4,130 +4,171 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
-# Sample list of courses with keywords
-course_list = [
-    {"course_name": "Strategic Financial Management", "keywords": ["financial management", "strategic planning", "financial analysis", "capital budgeting", "financial risk management"]},
-    {"course_name": "Machine Learning for Time Series Analysis", "keywords": ["machine learning", "time series analysis", "forecasting", "feature engineering", "deep learning"]},
-    {"course_name": "Data Science Fundamentals", "keywords": ["data science", "machine learning", "python", "statistics", "data analysis"]},
-    {"course_name": "Web Development Bootcamp", "keywords": ["web development", "HTML", "CSS", "JavaScript", "frontend", "backend"]},
-    {"course_name": "Digital Marketing Essentials", "keywords": ["digital marketing", "social media", "SEO", "content marketing", "online advertising"]},
-    {"course_name": "Python Programming Basics", "keywords": ["python programming", "programming basics", "variables", "loops", "functions"]},
-    {"course_name": "Financial Accounting Fundamentals", "keywords": ["financial accounting", "accounting basics", "balance sheet", "income statement", "financial ratios"]},
-    {"course_name": "Mobile App Development with Flutter", "keywords": ["mobile app development", "flutter", "Dart", "UI design", "app deployment"]},
-    {"course_name": "Business Analytics for Managers", "keywords": ["business analytics", "data-driven decision making", "analytics tools", "data visualization", "business intelligence"]},
-    {"course_name": "Photography Masterclass", "keywords": ["photography", "camera settings", "composition", "lighting techniques", "post-processing"]},
-    {"course_name": "Artificial Intelligence in Finance", "keywords": ["artificial intelligence", "finance", "machine learning", "algorithmic trading", "risk management"]},
-    {"course_name": "UI/UX Design Principles", "keywords": ["UI/UX design", "user interface", "user experience", "design thinking", "prototyping"]},
-    {"course_name": "Cybersecurity Fundamentals", "keywords": ["cybersecurity", "network security", "ethical hacking", "encryption", "security protocols"]},
-    {"course_name": "Content Writing for the Web", "keywords": ["content writing", "SEO writing", "blogging", "copywriting", "content strategy"]},
-    {"course_name": "Project Management Basics", "keywords": ["project management", "project planning", "team management", "risk management", "project lifecycle"]},
-    {"course_name": "Social Psychology Fundamentals", "keywords": ["social psychology", "group dynamics", "social influence", "communication", "behavioral psychology"]},
-    {"course_name": "E-commerce Business Strategies", "keywords": ["e-commerce", "online retail", "digital marketing", "customer acquisition", "e-commerce platforms"]},
-    {"course_name": "Public Speaking Mastery", "keywords": ["public speaking", "presentation skills", "speech writing", "confidence building", "audience engagement"]},
-    {"course_name": "Advanced Excel Techniques", "keywords": ["advanced excel", "data analysis", "macros", "pivot tables", "data visualization"]},
-    {"course_name": "Leadership and Team Management", "keywords": ["leadership", "team management", "motivation techniques", "conflict resolution", "communication skills"]},
-    {"course_name": "Blockchain Technology Fundamentals", "keywords": ["blockchain", "cryptocurrency", "smart contracts", "decentralized applications", "blockchain security"]},
-    {"course_name": "Data Visualization with Tableau", "keywords": ["data visualization", "Tableau", "data analysis", "dashboard design", "business intelligence"]},
-    {"course_name": "Healthcare Management Essentials", "keywords": ["healthcare management", "healthcare administration", "healthcare policy", "healthcare finance", "medical ethics"]},
-    {"course_name": "Strategic Marketing Management", "keywords": ["strategic marketing", "marketing management", "market analysis", "brand management", "marketing strategy"]},
-    {"course_name": "Game Development with Unity", "keywords": ["game development", "Unity", "C#", "game design", "game mechanics"]},
-    {"course_name": "Machine Learning for Business", "keywords": ["machine learning", "business analytics", "predictive modeling", "data-driven decision making", "business intelligence"]},
-    {"course_name": "Digital Illustration Techniques", "keywords": ["digital illustration", "Adobe Illustrator", "vector graphics", "drawing techniques", "graphic design"]},
-    {"course_name": "Human Resources Management Fundamentals", "keywords": ["human resources management", "employee relations", "recruitment", "training and development", "performance management"]},
-    {"course_name": "Financial Management Principles", "keywords": ["financial management", "budgeting", "financial analysis", "investment strategies", "risk management"]},
-    {"course_name": "English Language Proficiency", "keywords": ["English language", "grammar", "vocabulary", "reading comprehension", "writing skills"]},
-    {"course_name": "Artificial Intelligence Fundamentals", "keywords": ["artificial intelligence", "machine learning", "deep learning", "natural language processing", "neural networks"]},
-    {"course_name": "Business Process Improvement", "keywords": ["business process improvement", "process optimization", "lean six sigma", "continuous improvement", "process mapping"]},
-    {"course_name": "Data Engineering Basics", "keywords": ["data engineering", "ETL processes", "data modeling", "big data technologies", "database management"]},
-    {"course_name": "Brand Management Strategies", "keywords": ["brand management", "brand strategy", "brand positioning", "brand identity", "brand equity"]},
-    {"course_name": "Advanced Data Analysis Techniques", "keywords": ["data analysis", "statistical analysis", "predictive modeling", "data mining", "machine learning algorithms"]},
-    {"course_name": "Computer Networking Fundamentals", "keywords": ["computer networking", "network architecture", "routing protocols", "network security", "TCP/IP"]},
-    {"course_name": "Database Management Essentials", "keywords": ["database management", "SQL", "database design", "data modeling", "database administration"]},
-    {"course_name": "Human Resources Management", "keywords": ["human resources management", "recruitment", "employee relations", "performance management", "training and development"]},
-    {"course_name": "Content Writing Skills", "keywords": ["content writing", "copywriting", "SEO writing", "creative writing", "research skills"]},
-    {"course_name": "Computer Programming Logic", "keywords": ["programming logic", "algorithmic thinking", "problem solving", "code optimization", "flowcharting"]},
-    {"course_name": "Social Media Management", "keywords": ["social media management", "content creation", "audience engagement", "social media analytics", "community management"]},
-    {"course_name": "Data Visualization Techniques", "keywords": ["data visualization", "data interpretation", "visualization tools", "dashboard design", "storytelling with data"]},
-    {"course_name": "Software Testing Fundamentals", "keywords": ["software testing", "test planning", "test case design", "defect management", "automation testing"]},
-    {"course_name": "User Interface Design Principles", "keywords": ["user interface design", "UI design principles", "wireframing", "prototyping", "user research"]},
-    {"course_name": "Fundamentals of Cloud Computing", "keywords": ["cloud computing", "cloud service models", "virtualization", "cloud security", "AWS"]},
-    {"course_name": "Mobile App UI/UX Design", "keywords": ["mobile app UI/UX design", "mobile design guidelines", "prototyping tools", "user-centered design", "mobile app usability"]},
-    {"course_name": "Business Analytics Fundamentals", "keywords": ["business analytics", "data analysis", "data visualization", "predictive analytics", "statistical modeling"]},
-    {"course_name": "Ethical Hacking and Penetration Testing", "keywords": ["ethical hacking", "penetration testing", "network security", "web application security", "vulnerability assessment"]},
-    {"course_name": "English Language Writing Skills", "keywords": ["English language", "writing skills", "grammar", "vocabulary", "creative writing"]},
-    {"course_name": "Financial Accounting Basics", "keywords": ["financial accounting", "accounting principles", "financial statements", "bookkeeping", "financial analysis"]},
-    {"course_name": "Machine Learning with Python", "keywords": ["machine learning", "python programming", "data preprocessing", "supervised learning", "unsupervised learning"]},
-    {"course_name": "Java Web Development", "keywords": ["Java", "web development", "Servlets", "JSP", "Spring Framework"]},
-    {"course_name": "Creative Problem Solving Techniques", "keywords": ["creative problem solving", "brainstorming", "design thinking", "critical thinking", "innovation"]},
-    {"course_name": "Marketing Analytics Fundamentals", "keywords": ["marketing analytics", "data analysis", "marketing strategy", "customer segmentation", "predictive modeling"]},
-    {"course_name": "JavaScript Frameworks", "keywords": ["JavaScript", "React", "Angular", "Vue.js", "frontend development"]},
-    {"course_name": "Leadership Skills Development", "keywords": ["leadership", "team management", "communication skills", "decision making", "conflict resolution"]},
-    {"course_name": "Data Engineering Fundamentals", "keywords": ["data engineering", "ETL processes", "data warehousing", "big data technologies", "data pipeline development"]},
-    {"course_name": "Human-Centered Design", "keywords": ["human-centered design", "user-centered design", "empathy mapping", "prototyping", "user testing"]},
-    {"course_name": "Game Design Principles", "keywords": ["game design", "game mechanics", "level design", "game balancing", "user engagement"]},
-    {"course_name": "Strategic Management Fundamentals", "keywords": ["strategic management", "strategic planning", "SWOT analysis", "competitive analysis", "business model canvas"]},
-    {"course_name": "Technical Writing Skills", "keywords": ["technical writing", "documentation", "technical communication", "writing style", "editing"]},
-    {"course_name": "Database Administration Basics", "keywords": ["database administration", "database management systems", "SQL", "backup and recovery", "performance tuning"]},
-    {"course_name": "Business Process Improvement", "keywords": ["business process improvement", "process mapping", "lean six sigma", "continuous improvement", "root cause analysis"]},
-    {"course_name": "Digital Illustration Techniques", "keywords": ["digital illustration", "Adobe Illustrator", "vector graphics", "drawing techniques", "color theory"]},
-    {"course_name": "Cloud Computing Security", "keywords": ["cloud computing", "cloud security", "identity and access management", "encryption", "compliance"]},
-    {"course_name": "Social Psychology Fundamentals", "keywords": ["social psychology", "group dynamics", "social influence", "interpersonal communication", "cognitive biases"]},
-    {"course_name": "Business Communication Skills", "keywords": ["business communication", "email etiquette", "negotiation skills", "presentation skills", "effective meetings"]},
-    {"course_name": "Healthcare Management Fundamentals", "keywords": ["healthcare management", "healthcare administration", "health policy", "quality improvement", "healthcare finance"]},
-    {"course_name": "iOS App Development with Swift", "keywords": ["iOS app development", "Swift", "Xcode", "user interface design", "app deployment"]},
-    {"course_name": "Game Engine Architecture", "keywords": ["game engine development", "graphics programming", "physics simulation", "rendering techniques", "game engine optimization"]},
-    {"course_name": "Supply Chain Management Basics", "keywords": ["supply chain management", "logistics", "inventory management", "procurement", "demand forecasting"]},
-    {"course_name": "Brand Management Strategies", "keywords": ["brand management", "brand strategy", "brand positioning", "brand identity", "brand equity"]},
-    {"course_name": "Cloud Native Application Development", "keywords": ["cloud native", "microservices architecture", "containers", "Kubernetes", "serverless computing"]},
-    {"course_name": "Agile Project Management", "keywords": ["agile methodology", "Scrum", "Kanban", "sprint planning", "user stories"]},
-    {"course_name": "Advanced Data Analysis Techniques", "keywords": ["data analysis", "advanced statistics", "predictive modeling", "data mining", "time series analysis"]},
-    {"course_name": "Machine Learning for Business", "keywords": ["machine learning", "business analytics", "predictive modeling", "data visualization", "decision support systems"]},
-    {"course_name": "Android App Development with Kotlin", "keywords": ["Android app development", "Kotlin", "Android Studio", "user interface design", "app deployment"]},
-    {"course_name": "Network Security Fundamentals", "keywords": ["network security", "firewalls", "intrusion detection systems", "cryptography", "VPN"]},
-    {"course_name": "Professional Email Writing Skills", "keywords": ["email writing", "professional communication", "business writing", "email etiquette", "writing tone"]},
-    {"course_name": "Business Strategy Development", "keywords": ["business strategy", "strategic planning", "competitive analysis", "market research", "SWOT analysis"]},
-    {"course_name": "Content Strategy and Marketing", "keywords": ["content strategy", "content marketing", "content creation", "audience analysis", "content distribution"]},
-    {"course_name": "iOS App UI/UX Design", "keywords": ["iOS app UI/UX design", "human interface guidelines", "prototyping tools", "user-centered design", "mobile app usability"]},
-    {"course_name": "Quantitative Data Analysis", "keywords": ["quantitative data analysis", "statistical analysis", "data interpretation", "hypothesis testing", "regression analysis"]},
-    {"course_name": "IT Project Management", "keywords": ["IT project management", "project planning", "scope management", "risk management", "resource allocation"]},
-    {"course_name": "Copywriting for Digital Media", "keywords": ["copywriting", "content writing", "SEO writing", "content strategy", "persuasive writing"]},
-    {"course_name": "Data Warehousing Concepts", "keywords": ["data warehousing", "data modeling", "ETL processes", "data integration", "data warehouse design"]},
-    {"course_name": "Strategic Brand Management", "keywords": ["brand management", "brand strategy", "brand positioning", "brand equity", "brand identity"]},
-    {"course_name": "Ethical Leadership and Decision Making", "keywords": ["ethical leadership", "decision making", "ethical decision making", "leadership ethics", "corporate social responsibility"]},
-    {"course_name": "Agile Software Development", "keywords": ["agile methodology", "Scrum", "Kanban", "sprint planning", "user stories"]},
-    {"course_name": "Consumer Behavior Analysis", "keywords": ["consumer behavior", "market research", "consumer psychology", "purchase decision making", "brand perception"]},
-    {"course_name": "IoT Fundamentals", "keywords": ["Internet of Things (IoT)", "IoT devices", "sensor networks", "IoT applications", "IoT security"]},
-    {"course_name": "Business Process Automation", "keywords": ["business process automation", "process analysis", "workflow automation", "RPA", "business process management"]},
-    {"course_name": "User Experience Research", "keywords": ["user experience research", "user interviews", "usability testing", "persona development", "user journey mapping"]},
-    {"course_name": "Data Governance Fundamentals", "keywords": ["data governance", "data management", "data quality", "data stewardship", "regulatory compliance"]},
-    {"course_name": "Strategic Human Resources Management", "keywords": ["human resources management", "strategic planning", "talent management", "performance management", "employee engagement"]},
-    {"course_name": "Web Application Security", "keywords": ["web application security", "OWASP Top 10", "vulnerability assessment", "penetration testing", "security best practices"]},
-    {"course_name": "Leadership and Team Management", "keywords": ["leadership", "team management", "motivation techniques", "conflict resolution", "effective communication"]},
-    {"course_name": "Content Management Systems", "keywords": ["content management systems", "CMS customization", "content publishing", "website management", "content workflow"]},
-    {"course_name": "Business Intelligence Fundamentals", "keywords": ["business intelligence", "data warehousing", "data visualization", "data analysis", "dashboard design"]},
-    {"course_name": "Data Mining Techniques", "keywords": ["data mining", "association rule mining", "classification", "clustering", "anomaly detection"]},
-    {"course_name": "Organizational Behavior and Leadership", "keywords": ["organizational behavior", "leadership", "motivation", "team dynamics", "conflict resolution"]},
-    {"course_name": "Digital Strategy and Transformation", "keywords": ["digital strategy", "digital transformation", "digital marketing", "customer experience", "innovation"]},
-    {"course_name": "Cloud Infrastructure Management", "keywords": ["cloud infrastructure", "cloud migration", "cost management", "monitoring and optimization", "cloud security"]},
-    {"course_name": "Business Process Reengineering", "keywords": ["business process reengineering", "process analysis", "process redesign", "change management", "workflow automation"]},
-    {"course_name": "Project Risk Management", "keywords": ["project risk management", "risk identification", "risk assessment", "risk mitigation", "risk monitoring"]},
-    {"course_name": "Advanced Excel Skills", "keywords": ["excel", "advanced formulas", "pivot tables", "charts and graphs", "macros"]},
-    {"course_name": "Business Analytics with Python", "keywords": ["business analytics", "python programming", "data analysis", "data visualization", "predictive modeling"]},
-    {"course_name": "Social Media Advertising Strategies", "keywords": ["social media advertising", "Facebook ads", "Instagram ads", "LinkedIn ads", "Twitter ads"]},
-    {"course_name": "E-commerce Business Essentials", "keywords": ["e-commerce", "online store development", "digital marketing", "customer acquisition", "order fulfillment"]},
-    {"course_name": "Machine Learning for Natural Language Processing", "keywords": ["machine learning", "natural language processing", "text mining", "sentiment analysis", "named entity recognition"]},
-    {"course_name": "Digital Marketing Analytics", "keywords": ["digital marketing analytics", "Google Analytics", "social media analytics", "web traffic analysis", "conversion rate optimization"]},
-    {"course_name": "Advanced Web Development", "keywords": ["advanced web development", "React.js", "Node.js", "RESTful APIs", "web security"]},
-    {"course_name": "Supply Chain Analytics", "keywords": ["supply chain management", "data analysis", "data visualization", "supply chain optimization", "forecasting"]},
-    {"course_name": "Strategic Financial Management", "keywords": ["financial management", "strategic planning", "financial analysis", "capital budgeting", "financial risk management"]},
-    {"course_name": "Machine Learning for Time Series Analysis", "keywords": ["machine learning", "time series analysis", "forecasting", "feature engineering", "deep learning"]},
-    {"course_name": "Business Ethics and Corporate Governance", "keywords": ["business ethics", "corporate governance", "ethical decision making", "corporate social responsibility", "legal compliance"]},
-    {"course_name": "Advanced Database Management", "keywords": ["database management", "database administration", "SQL", "data modeling", "performance tuning"]},
-]
-
 # Download NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
+course_list = [
+    {"course_name": "Data Science Fundamentals", "keywords": ["data science", "machine learning", "python"], "university": "TechHub University"},
+    {"course_name": "Web Development Bootcamp", "keywords": ["web development", "HTML", "CSS", "JavaScript"], "university": "CodeMaster Institute"},
+    {"course_name": "Digital Marketing Essentials", "keywords": ["digital marketing", "social media", "SEO"], "university": "MarketPro Academy"},
+    {"course_name": "Software Engineering Principles", "keywords": ["software engineering", "programming", "software design"], "university": "CodeCraft University"},
+    {"course_name": "Finance for Non-Finance Professionals", "keywords": ["finance", "accounting", "financial analysis"], "university": "MoneyMatters Institute"},
+    {"course_name": "Cybersecurity Fundamentals", "keywords": ["cybersecurity", "network security", "information security"], "university": "SecureNet Academy"},
+    {"course_name": "Business Analytics Masterclass", "keywords": ["business analytics", "data analysis", "predictive modeling"], "university": "BizTech School"},
+    {"course_name": "Graphic Design Essentials", "keywords": ["graphic design", "Adobe Photoshop", "illustration"], "university": "DesignPro College"},
+    {"course_name": "Leadership and Management Skills", "keywords": ["leadership", "management", "team building"], "university": "LeadWell University"},
+    {"course_name": "Mobile App Development Bootcamp", "keywords": ["mobile app development", "iOS", "Android", "app design"], "university": "AppDev Institute"},
+    {"course_name": "Project Management Fundamentals", "keywords": ["project management", "project planning", "agile methodology"], "university": "ProjectPro School"},
+    {"course_name": "Artificial Intelligence Basics", "keywords": ["artificial intelligence", "machine learning", "neural networks"], "university": "AI Academy"},
+    {"course_name": "Content Writing for Digital Media", "keywords": ["content writing", "copywriting", "SEO writing"], "university": "ContentCraft Institute"},
+    {"course_name": "Healthcare Administration Essentials", "keywords": ["healthcare administration", "healthcare management", "health policy"], "university": "HealthPro University"},
+    {"course_name": "Entrepreneurship and Startup Management", "keywords": ["entrepreneurship", "startup", "business development"], "university": "StartupLaunch College"},
+    {"course_name": "Data Visualization Techniques", "keywords": ["data visualization", "infographics", "dashboard design"], "university": "VisualInsight Institute"},
+    {"course_name": "Networking Fundamentals", "keywords": ["networking", "TCP/IP", "routing"], "university": "NetConnect Academy"},
+    {"course_name": "Game Development Fundamentals", "keywords": ["game development", "Unity", "game design"], "university": "GameForge School"},
+    {"course_name": "Human Resources Management Essentials", "keywords": ["human resources", "HR management", "recruitment"], "university": "HRPro College"},
+    {"course_name": "Ethical Hacking and Penetration Testing", "keywords": ["ethical hacking", "penetration testing", "cybersecurity"], "university": "HackSafe Institute"},
+    {"course_name": "Digital Photography Masterclass", "keywords": ["digital photography", "photography techniques", "Adobe Lightroom"], "university": "PhotoPro Academy"},
+    {"course_name": "Supply Chain Management Principles", "keywords": ["supply chain management", "logistics", "inventory management"], "university": "SupplyLink College"},
+    {"course_name": "UI/UX Design Essentials", "keywords": ["UI/UX design", "user interface design", "user experience"], "university": "DesignTech Institute"},
+    {"course_name": "Blockchain Technology Basics", "keywords": ["blockchain", "cryptocurrency", "smart contracts"], "university": "ChainTech School"},
+    {"course_name": "Advanced Excel Skills", "keywords": ["Excel", "data analysis", "pivot tables"], "university": "ExcelPro Institute"},
+    {"course_name": "Presentation Skills Mastery", "keywords": ["presentation skills", "public speaking", "confidence building"], "university": "SpeakUp Academy"},
+    {"course_name": "Digital Illustration Techniques", "keywords": ["digital illustration", "Adobe Illustrator", "vector graphics"], "university": "IllustrateIt Institute"},
+    {"course_name": "Marketing Strategy Fundamentals", "keywords": ["marketing strategy", "branding", "market research"], "university": "MarketMasters School"},
+    {"course_name": "Business Intelligence Essentials", "keywords": ["business intelligence", "data warehousing", "BI tools"], "university": "DataInsight College"},
+    {"course_name": "Data Mining Fundamentals", "keywords": ["data mining", "data analysis", "pattern recognition"], "university": "MineData Institute"},
+    {"course_name": "Creative Writing Workshop", "keywords": ["creative writing", "storytelling", "writing techniques"], "university": "WriteCraft Academy"},
+    {"course_name": "Cloud Computing Fundamentals", "keywords": ["cloud computing", "AWS", "Azure", "virtualization"], "university": "CloudTech School"},
+    {"course_name": "Customer Service Excellence", "keywords": ["customer service", "customer satisfaction", "communication skills"], "university": "ServicePro College"},
+    {"course_name": "Data Warehousing Concepts", "keywords": ["data warehousing", "ETL processes", "data integration"], "university": "DataWare College"},
+    {"course_name": "UX Research and Usability Testing", "keywords": ["UX research", "usability testing", "user interviews"], "university": "UXPro Institute"},
+    {"course_name": "Financial Modeling Fundamentals", "keywords": ["financial modeling", "valuation", "forecasting"], "university": "FinancePro College"},
+    {"course_name": "Mobile Marketing Strategies", "keywords": ["mobile marketing", "app advertising", "app monetization"], "university": "MobileMasters School"},
+    {"course_name": "Social Media Management Essentials", "keywords": ["social media management", "content scheduling", "community engagement"], "university": "SocialPro Institute"},
+    {"course_name": "Business Process Reengineering", "keywords": ["business process reengineering", "process optimization", "business transformation"], "university": "ProcessPro College"},
+    {"course_name": "Machine Learning for Business", "keywords": ["machine learning", "business analytics", "predictive modeling"], "university": "ML4Biz School"},
+    {"course_name": "Public Relations Fundamentals", "keywords": ["public relations", "media relations", "crisis management"], "university": "PRPro Institute"},
+    {"course_name": "Risk Management Essentials", "keywords": ["risk management", "risk assessment", "risk mitigation"], "university": "RiskPro College"},
+    {"course_name": "Video Production Techniques", "keywords": ["video production", "video editing", "cinematography"], "university": "VideoCraft Institute"},
+    {"course_name": "Network Security Principles", "keywords": ["network security", "firewalls", "encryption"], "university": "SecureNet College"},
+    {"course_name": "Business Negotiation Skills", "keywords": ["negotiation skills", "conflict resolution", "persuasion techniques"], "university": "NegotiateWell School"},
+    {"course_name": "Database Management Essentials", "keywords": ["database management", "SQL", "database design"], "university": "DataTech Institute"},
+    {"course_name": "Agile Project Management", "keywords": ["agile project management", "scrum", "sprint planning"], "university": "AgilePro College"},
+    {"course_name": "Content Strategy and Marketing", "keywords": ["content strategy", "content marketing", "content creation"], "university": "ContentPro Institute"},
+    {"course_name": "Mobile App UI/UX Design", "keywords": ["mobile app design", "UI/UX design", "mobile usability"], "university": "AppDesign College"},
+    {"course_name": "Strategic Planning and Execution", "keywords": ["strategic planning", "business strategy", "strategic management"], "university": "StrategyPro School"},
+    {"course_name": "Cloud Security Fundamentals", "keywords": ["cloud security", "security best practices", "identity management"], "university": "SecureCloud Institute"},
+    {"course_name": "Email Marketing Essentials", "keywords": ["email marketing", "email automation", "email campaigns"], "university": "EmailPro College"},
+    {"course_name": "Digital Advertising Strategies", "keywords": ["digital advertising", "online advertising", "PPC"], "university": "AdvertiseTech School"},
+    {"course_name": "Strategic Brand Management", "keywords": ["brand management", "brand strategy", "brand positioning"], "university": "BrandPro Institute"},
+    {"course_name": "Data Governance Fundamentals", "keywords": ["data governance", "data management", "data policies"], "university": "DataGov College"},
+    {"course_name": "Leadership Development Program", "keywords": ["leadership development", "leadership skills", "leadership coaching"], "university": "LeadPro School"},
+    {"course_name": "Social Psychology Essentials", "keywords": ["social psychology", "group behavior", "social influence"], "university": "SocialPsych Institute"},
+    {"course_name": "Retail Management Fundamentals", "keywords": ["retail management", "merchandising", "inventory control"], "university": "RetailPro College"},
+    {"course_name": "Mobile Game Development", "keywords": ["mobile game development", "game design", "game programming"], "university": "GameDev Institute"},
+    {"course_name": "Operations Management Basics", "keywords": ["operations management", "process improvement", "quality management"], "university": "OpsPro School"},
+    {"course_name": "Search Engine Optimization (SEO)", "keywords": ["search engine optimization", "SEO techniques", "keyword research"], "university": "SEOPro Institute"},
+    {"course_name": "Strategic Financial Management", "keywords": ["financial management", "corporate finance", "financial analysis"], "university": "FinanceStrat College"},
+    {"course_name": "Data Analysis with R Programming", "keywords": ["data analysis", "R programming", "data visualization"], "university": "DataR School"},
+    {"course_name": "Brand Identity Design", "keywords": ["brand identity", "logo design", "brand guidelines"], "university": "BrandDesign Institute"},
+    {"course_name": "Customer Relationship Management (CRM)", "keywords": ["CRM", "customer relationship", "sales management"], "university": "CRMPro School"},
+    {"course_name": "Entrepreneurial Finance Fundamentals", "keywords": ["entrepreneurial finance", "startup funding", "venture capital"], "university": "StartupFinance College"},
+    {"course_name": "Data Ethics and Privacy", "keywords": ["data ethics", "privacy laws", "ethical data practices"], "university": "DataEthics Institute"},
+    {"course_name": "Strategic Marketing Management", "keywords": ["strategic marketing", "marketing planning", "brand management"], "university": "MarketStrat School"},
+    {"course_name": "Machine Learning for Natural Language Processing", "keywords": ["machine learning", "natural language processing", "text mining"], "university": "NLP4ML Institute"},
+    {"course_name": "Digital Transformation Strategies", "keywords": ["digital transformation", "business innovation", "change management"], "university": "DigitalTrans Institute"},
+    {"course_name": "Business Process Automation", "keywords": ["business process automation", "workflow automation", "RPA"], "university": "ProcessAuto School"},
+    {"course_name": "Marketing Analytics Essentials", "keywords": ["marketing analytics", "data analysis", "marketing ROI"], "university": "MarketingAnal School"},
+    {"course_name": "Strategic Human Resources Management", "keywords": ["human resources management", "talent management", "HR strategy"], "university": "HRStrat Institute"},
+    {"course_name": "Web Development with Python", "keywords": ["web development", "Python", "Django"], "university": "PythonWeb College"},
+    {"course_name": "Business Process Improvement", "keywords": ["business process improvement", "process optimization", "continuous improvement"], "university": "BizImprovement Institute"},
+    {"course_name": "Digital Product Management", "keywords": ["product management", "digital products", "product strategy"], "university": "ProdMgmt School"},
+    {"course_name": "IT Service Management Essentials", "keywords": ["IT service management", "ITIL", "service desk"], "university": "ITService College"},
+    {"course_name": "Advanced Networking Concepts", "keywords": ["networking", "advanced routing", "network protocols"], "university": "NetAdv School"},
+    {"course_name": "Business Law Fundamentals", "keywords": ["business law", "legal regulations", "contracts"], "university": "LawBiz School"},
+    {"course_name": "Data Visualization with Tableau", "keywords": ["data visualization", "Tableau", "data dashboards"], "university": "TableauViz Institute"},
+    {"course_name": "Digital Content Creation", "keywords": ["digital content", "content creation", "multimedia production"], "university": "DigitalContent School"},
+    {"course_name": "Strategic Management Principles", "keywords": ["strategic management", "business strategy", "strategic planning"], "university": "StratMgmt Institute"},
+    {"course_name": "Ethical Leadership and Decision Making", "keywords": ["ethical leadership", "decision making", "integrity"], "university": "EthicalLead College"},
+    {"course_name": "Fundamentals of Product Design", "keywords": ["product design", "design thinking", "prototyping"], "university": "ProdDesign School"},
+    {"course_name": "Digital Entrepreneurship", "keywords": ["digital entrepreneurship", "online business", "startup strategies"], "university": "DigitalEntre School"},
+    {"course_name": "Marketing Automation Fundamentals", "keywords": ["marketing automation", "email automation", "lead nurturing"], "university": "AutoMkt School"},
+    {"course_name": "Data Analysis with Excel", "keywords": ["data analysis", "Excel", "data visualization"], "university": "ExcelAnal Institute"},
+    {"course_name": "Strategic Branding and Identity", "keywords": ["strategic branding", "brand identity", "brand positioning"], "university": "BrandStrat School"},
+    {"course_name": "Social Media Strategy Development", "keywords": ["social media strategy", "content planning", "engagement tactics"], "university": "SocMediaStrat College"},
+    {"course_name": "Advanced Web Development Techniques", "keywords": ["web development", "advanced JavaScript", "full-stack development"], "university": "AdvWebDev Institute"},
+    {"course_name": "Project Risk Management", "keywords": ["project risk management", "risk assessment", "risk mitigation"], "university": "RiskMgmt College"},
+    {"course_name": "Data Analysis with Python", "keywords": ["data analysis", "Python", "data manipulation"], "university": "PythonAnal Institute"},
+    {"course_name": "Strategic Innovation Management", "keywords": ["strategic innovation", "innovation strategy", "design thinking"], "university": "InnovationMgmt College"},
+    {"course_name": "Digital Marketing Analytics", "keywords": ["digital marketing analytics", "marketing metrics", "data-driven marketing"], "university": "DigitalMktAnal Institute"},
+    {"course_name": "Cloud Architecture and Design", "keywords": ["cloud architecture", "cloud services", "scalability"], "university": "CloudArch Institute"},
+    {"course_name": "Strategic Sales Management", "keywords": ["strategic sales", "sales planning", "sales strategies"], "university": "SalesStrat College"},
+    {"course_name": "Data Science for Business Analytics", "keywords": ["data science", "business analytics", "predictive modeling"], "university": "DS4Biz Institute"},
+    {"course_name": "Digital Media Planning and Buying", "keywords": ["media planning", "media buying", "digital advertising"], "university": "MediaPlan Institute"},
+    {"course_name": "Blockchain Applications and Use Cases", "keywords": ["blockchain applications", "blockchain use cases", "cryptocurrency"], "university": "BlockApp Institute"},
+    {"course_name": "Strategic Project Management", "keywords": ["strategic project management", "project planning", "project execution"], "university": "ProjectStrat College"},
+    {"course_name": "Data Visualization with Python", "keywords": ["data visualization", "Python", "matplotlib"], "university": "PythonViz Institute"},
+    {"course_name": "Strategic Human Resources Management", "keywords": ["human resources management", "talent management", "HR strategy"], "university": "HRStrat Institute"},
+    {"course_name": "Web Development with Python", "keywords": ["web development", "Python", "Django"], "university": "PythonWeb College"},
+    {"course_name": "Business Process Improvement", "keywords": ["business process improvement", "process optimization", "continuous improvement"], "university": "BizImprovement Institute"},
+    {"course_name": "Digital Product Management", "keywords": ["product management", "digital products", "product strategy"], "university": "ProdMgmt School"},
+    {"course_name": "IT Service Management Essentials", "keywords": ["IT service management", "ITIL", "service desk"], "university": "ITService College"},
+    {"course_name": "Advanced Networking Concepts", "keywords": ["networking", "advanced routing", "network protocols"], "university": "NetAdv School"},
+    {"course_name": "Business Law Fundamentals", "keywords": ["business law", "legal regulations", "contracts"], "university": "LawBiz School"},
+    {"course_name": "Data Visualization with Tableau", "keywords": ["data visualization", "Tableau", "data dashboards"], "university": "TableauViz Institute"},
+    {"course_name": "Digital Content Creation", "keywords": ["digital content", "content creation", "multimedia production"], "university": "DigitalContent School"},
+    {"course_name": "Strategic Management Principles", "keywords": ["strategic management", "business strategy", "strategic planning"], "university": "StratMgmt Institute"},
+    {"course_name": "Ethical Leadership and Decision Making", "keywords": ["ethical leadership", "decision making", "integrity"], "university": "EthicalLead College"},
+    {"course_name": "Fundamentals of Product Design", "keywords": ["product design", "design thinking", "prototyping"], "university": "ProdDesign School"},
+    {"course_name": "Digital Entrepreneurship", "keywords": ["digital entrepreneurship", "online business", "startup strategies"], "university": "DigitalEntre School"},
+    {"course_name": "Marketing Automation Fundamentals", "keywords": ["marketing automation", "email automation", "lead nurturing"], "university": "AutoMkt School"},
+    {"course_name": "Data Analysis with Excel", "keywords": ["data analysis", "Excel", "data visualization"], "university": "ExcelAnal Institute"},
+    {"course_name": "Strategic Branding and Identity", "keywords": ["strategic branding", "brand identity", "brand positioning"], "university": "BrandStrat School"},
+    {"course_name": "Social Media Strategy Development", "keywords": ["social media strategy", "content planning", "engagement tactics"], "university": "SocMediaStrat College"},
+    {"course_name": "Advanced Web Development Techniques", "keywords": ["web development", "advanced JavaScript", "full-stack development"], "university": "AdvWebDev Institute"},
+    {"course_name": "Project Risk Management", "keywords": ["project risk management", "risk assessment", "risk mitigation"], "university": "RiskMgmt College"},
+    {"course_name": "Data Analysis with Python", "keywords": ["data analysis", "Python", "data manipulation"], "university": "PythonAnal Institute"},
+    {"course_name": "Strategic Innovation Management", "keywords": ["strategic innovation", "innovation strategy", "design thinking"], "university": "InnovationMgmt College"},
+    {"course_name": "Digital Marketing Analytics", "keywords": ["digital marketing analytics", "marketing metrics", "data-driven marketing"], "university": "DigitalMktAnal Institute"},
+    {"course_name": "Cloud Architecture and Design", "keywords": ["cloud architecture", "cloud services", "scalability"], "university": "CloudArch Institute"},
+    {"course_name": "Strategic Sales Management", "keywords": ["strategic sales", "sales planning", "sales strategies"], "university": "SalesStrat College"},
+    {"course_name": "Data Science for Business Analytics", "keywords": ["data science", "business analytics", "predictive modeling"], "university": "DS4Biz Institute"},
+    {"course_name": "Digital Media Planning and Buying", "keywords": ["media planning", "media buying", "digital advertising"], "university": "MediaPlan Institute"},
+    {"course_name": "Blockchain Applications and Use Cases", "keywords": ["blockchain applications", "blockchain use cases", "cryptocurrency"], "university": "BlockApp Institute"},
+    {"course_name": "Strategic Project Management", "keywords": ["strategic project management", "project planning", "project execution"], "university": "ProjectStrat College"},
+    {"course_name": "Data Visualization with Python", "keywords": ["data visualization", "Python", "matplotlib"], "university": "PythonViz Institute"},
+    {"course_name": "Strategic Human Resources Management", "keywords": ["human resources management", "talent management", "HR strategy"], "university": "HRStrat Institute"},
+    {"course_name": "Web Development with Python", "keywords": ["web development", "Python", "Django"], "university": "PythonWeb College"},
+    {"course_name": "Business Process Improvement", "keywords": ["business process improvement", "process optimization", "continuous improvement"], "university": "BizImprovement Institute"},
+    {"course_name": "Digital Product Management", "keywords": ["product management", "digital products", "product strategy"], "university": "ProdMgmt School"},
+    {"course_name": "IT Service Management Essentials", "keywords": ["IT service management", "ITIL", "service desk"], "university": "ITService College"},
+    {"course_name": "Advanced Networking Concepts", "keywords": ["networking", "advanced routing", "network protocols"], "university": "NetAdv School"},
+    {"course_name": "Business Law Fundamentals", "keywords": ["business law", "legal regulations", "contracts"], "university": "LawBiz School"},
+    {"course_name": "Data Visualization with Tableau", "keywords": ["data visualization", "Tableau", "data dashboards"], "university": "TableauViz Institute"},
+    {"course_name": "Digital Content Creation", "keywords": ["digital content", "content creation", "multimedia production"], "university": "DigitalContent School"},
+    {"course_name": "Strategic Management Principles", "keywords": ["strategic management", "business strategy", "strategic planning"], "university": "StratMgmt Institute"},
+    {"course_name": "Ethical Leadership and Decision Making", "keywords": ["ethical leadership", "decision making", "integrity"], "university": "EthicalLead College"},
+    {"course_name": "Fundamentals of Product Design", "keywords": ["product design", "design thinking", "prototyping"], "university": "ProdDesign School"},
+    {"course_name": "Digital Entrepreneurship", "keywords": ["digital entrepreneurship", "online business", "startup strategies"], "university": "DigitalEntre School"},
+    {"course_name": "Marketing Automation Fundamentals", "keywords": ["marketing automation", "email automation", "lead nurturing"], "university": "AutoMkt School"},
+    {"course_name": "Data Analysis with Excel", "keywords": ["data analysis", "Excel", "data visualization"], "university": "ExcelAnal Institute"},
+    {"course_name": "Strategic Branding and Identity", "keywords": ["strategic branding", "brand identity", "brand positioning"], "university": "BrandStrat School"},
+    {"course_name": "Social Media Strategy Development", "keywords": ["social media strategy", "content planning", "engagement tactics"], "university": "SocMediaStrat College"},
+    {"course_name": "Advanced Web Development Techniques", "keywords": ["web development", "advanced JavaScript", "full-stack development"], "university": "AdvWebDev Institute"},
+    {"course_name": "Project Risk Management", "keywords": ["project risk management", "risk assessment", "risk mitigation"], "university": "RiskMgmt College"},
+    {"course_name": "Data Analysis with Python", "keywords": ["data analysis", "Python", "data manipulation"], "university": "PythonAnal Institute"},
+    {"course_name": "Strategic Innovation Management", "keywords": ["strategic innovation", "innovation strategy", "design thinking"], "university": "InnovationMgmt College"},
+    {"course_name": "Digital Marketing Analytics", "keywords": ["digital marketing analytics", "marketing metrics", "data-driven marketing"], "university": "DigitalMktAnal Institute"},
+    {"course_name": "Cloud Architecture and Design", "keywords": ["cloud architecture", "cloud services", "scalability"], "university": "CloudArch Institute"},
+    {"course_name": "Strategic Sales Management", "keywords": ["strategic sales", "sales planning", "sales strategies"], "university": "SalesStrat College"},
+    {"course_name": "Data Science for Business Analytics", "keywords": ["data science", "business analytics", "predictive modeling"], "university": "DS4Biz Institute"},
+    {"course_name": "Digital Media Planning and Buying", "keywords": ["media planning", "media buying", "digital advertising"], "university": "MediaPlan Institute"},
+    {"course_name": "Blockchain Applications and Use Cases", "keywords": ["blockchain applications", "blockchain use cases", "cryptocurrency"], "university": "BlockApp Institute"},
+    {"course_name": "Strategic Project Management", "keywords": ["strategic project management", "project planning", "project execution"], "university": "ProjectStrat College"},
+    {"course_name": "Data Visualization with Python", "keywords": ["data visualization", "Python", "matplotlib"], "university": "PythonViz Institute"},
+    {"course_name": "Strategic Human Resources Management", "keywords": ["human resources management", "talent management", "HR strategy"], "university": "HRStrat Institute"}
+]
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_file):
@@ -155,17 +196,46 @@ def filter_courses_by_keywords(keywords):
         match_count = sum(keyword.lower() in course_keywords for keyword in keywords)
         if match_count > 0:
             if len(suggested_courses) < 7:
-                suggested_courses.append((course['course_name'], match_count))
+                suggested_courses.append((course['course_name'], course['university'], match_count))
                 if match_count > max_matches:
                     max_matches = match_count
             else:
-                suggested_courses.sort(key=lambda x: x[1], reverse=True)
-                if match_count > suggested_courses[6][1]:
+                suggested_courses.sort(key=lambda x: x[2], reverse=True)
+                if match_count > suggested_courses[6][2]:
                     suggested_courses.pop()
-                    suggested_courses.append((course['course_name'], match_count))
-    suggested_courses.sort(key=lambda x: x[1], reverse=True)
-    return [course[0] for course in suggested_courses]
+                    suggested_courses.append((course['course_name'], course['university'], match_count))
+    suggested_courses.sort(key=lambda x: x[2], reverse=True)
+    return [(course[0], course[1]) for course in suggested_courses]
+
 def main():
+    st.markdown(
+        """
+        <style>
+            .main {
+                background-image: linear-gradient(to bottom, #7fbfff, #55aaff);
+                color: white;
+                padding: 20px;
+                border-radius: 10px;
+            }
+            h1 {
+                text-align: center;
+                font-size: 36px;
+                font-weight: bold;
+                margin-bottom: 30px;
+            }
+            p {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            .course {
+                font-size: 20px;
+                margin-bottom: 5px;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+    st.image("pic.jpg", width=100)
     st.title("Course Recommendation based on Resume")
     uploaded_file = st.file_uploader("Upload your resume (PDF)", type=["pdf"])
 
@@ -182,14 +252,10 @@ def main():
         # Display suggested courses
         if suggested_courses:
             st.write("Suggested Courses based on your resume:")
-            for course in suggested_courses:
-                st.write(f"- {course}")
+            for course, university in suggested_courses:
+                st.write(f"- {course} at {university}")
         else:
             st.write("No courses found based on your resume.")
-        data = "Hello, World!"
-        button_clicked = st.button("Check University")
-        if button_clicked:
-            st.write("Data:", data)
-        
+
 if __name__ == "__main__":
     main()
